@@ -1,0 +1,29 @@
+{
+  "name": "1stand2nd",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "theme:dev": "shopify theme dev --store=1st-and-2nd-absolute.myshopify.com",
+    "theme:push": "shopify theme push --store=1st-and-2nd-absolute.myshopify.com",
+    "theme:pull": "shopify theme pull --store=1st-and-2nd-absolute.myshopify.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://rinaldomelo@github.com/rinaldomelo/1stand2nd.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/rinaldomelo/1stand2nd/issues"
+  },
+  "homepage": "https://github.com/rinaldomelo/1stand2nd#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.58.0"
+  }
+}
