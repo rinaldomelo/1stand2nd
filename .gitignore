@@ -4,7 +4,6 @@
 .LSOverride
 
 # Shopify
-config/settings_data.json
 node_modules/
 
 # IDE
