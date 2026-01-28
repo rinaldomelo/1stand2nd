@@ -4,13 +4,125 @@ Use this template to set up new Shopify stores with Claude Code. Copy the prompt
 
 ---
 
-## Prerequisites
+## Environment Requirements
 
-Before starting, ensure you have:
-1. Shopify CLI installed (`npm install -g @shopify/cli`)
-2. Authenticated with Shopify (`shopify auth login --store YOUR_STORE.myshopify.com`)
-3. Access to both old and new theme IDs (find in Shopify Admin > Online Store > Themes)
-4. A GitHub repository for the theme
+### 1. Shopify CLI Installation
+
+```bash
+# Install Node.js (v18 or higher required)
+# macOS with Homebrew:
+brew install node
+
+# Verify Node version
+node --version  # Should be v18+
+
+# Install Shopify CLI globally
+npm install -g @shopify/cli @shopify/theme
+
+# Verify installation
+shopify version
+```
+
+### 2. Shopify Authentication
+
+```bash
+# Login to your Shopify store
+shopify auth login --store YOUR_STORE.myshopify.com
+
+# This will open a browser window for OAuth authentication
+# You need to be a staff member or owner of the store
+
+# Verify authentication
+shopify theme list
+```
+
+### 3. Theme Setup
+
+```bash
+# Create a new directory for the theme
+mkdir my-store-theme && cd my-store-theme
+
+# Initialize git repository
+git init
+
+# Pull the theme you want to work with
+shopify theme pull --theme [THEME_ID]
+
+# Create GitHub repository and push
+gh repo create [REPO_NAME] --private --source=. --push
+# OR manually add remote and push:
+git remote add origin https://github.com/[USERNAME]/[REPO_NAME].git
+git add .
+git commit -m "Initial theme setup"
+git push -u origin main
+```
+
+### 4. Finding Theme IDs
+
+1. Go to Shopify Admin > Online Store > Themes
+2. Click the three dots (...) on any theme
+3. Select "Edit code"
+4. The URL will contain the theme ID: `/admin/themes/[THEME_ID]/editor`
+
+Or use CLI:
+```bash
+shopify theme list
+```
+
+---
+
+## Claude Code MCP Configuration
+
+### Shopify Dev MCP Setup
+
+Add the Shopify Dev MCP server to Claude Code for access to Shopify documentation, GraphQL schema introspection, and Liquid validation.
+
+**Location**: `~/.claude/claude_desktop_config.json` (or Claude Code settings)
+
+```json
+{
+  "mcpServers": {
+    "shopify-dev-mcp": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/shopify-dev-mcp@latest"]
+    }
+  }
+}
+```
+
+### When to Use Shopify Dev MCP
+
+| Use Case | MCP Tool |
+|----------|----------|
+| GraphQL queries/mutations | `introspect_graphql_schema`, `validate_graphql_codeblocks` |
+| Liquid template validation | `validate_theme` |
+| Polaris UI components | `validate_component_codeblocks` |
+| Admin/Checkout extensions | `learn_extension_target_types` |
+| Shopify Functions | `learn_shopify_api` with `api: "functions"` |
+| Documentation lookup | `search_docs_chunks`, `fetch_full_docs` |
+| Metafields/Metaobjects | `learn_shopify_api` with `api: "custom-data"` |
+
+### When NOT to Use MCP (Use Direct File Editing Instead)
+
+- Editing theme JSON files (settings_data.json, templates, sections)
+- Copying configurations between themes
+- Syncing styles, colors, fonts
+- Basic Liquid edits that don't need validation
+- Pushing/pulling with Shopify CLI
+
+---
+
+## Prerequisites Checklist
+
+Before starting a Claude Code session, verify:
+
+- [ ] Node.js v18+ installed (`node --version`)
+- [ ] Shopify CLI installed (`shopify version`)
+- [ ] Authenticated with store (`shopify auth login --store STORE.myshopify.com`)
+- [ ] Theme IDs identified (old theme, new/development theme)
+- [ ] GitHub repository created
+- [ ] Local directory set up with theme files pulled
+- [ ] Shopify Dev MCP configured (optional, for advanced features)
 
 ---
 
@@ -167,7 +279,56 @@ shopify theme list
 
 ---
 
+## Recommended .gitignore
+
+```gitignore
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Shopify
+node_modules/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+```
+
+**Important**: Do NOT add `config/settings_data.json` to .gitignore if you want to track styling in version control.
+
+---
+
 ## Troubleshooting
+
+### Shopify CLI Authentication Issues
+
+```bash
+# Clear existing auth and re-login
+shopify auth logout
+shopify auth login --store YOUR_STORE.myshopify.com
+
+# If using multiple stores, specify store explicitly
+shopify theme list --store YOUR_STORE.myshopify.com
+```
+
+### Theme Push/Pull Errors
+
+```bash
+# Check if authenticated
+shopify whoami
+
+# Verify theme exists
+shopify theme list
+
+# Force push (overwrites remote)
+shopify theme push --theme [THEME_ID] --force
+```
 
 ### File not syncing to GitHub
 Check if it's in `.gitignore`. Remove the entry if you want to track it:
@@ -196,14 +357,15 @@ diff /tmp/old-theme/config/settings_data.json /tmp/new-theme/config/settings_dat
 
 ## Session Workflow Summary
 
-1. **Identify differences**: Compare old and new theme files
-2. **Sync settings**: Copy settings_data.json values from old to new
-3. **Sync sections**: Copy header-group.json and footer-group.json
-4. **Migrate templates**: Copy custom page templates
-5. **Add features**: Add swatches, customize blocks as needed
-6. **Push to Shopify**: `shopify theme push --theme [THEME_ID]`
-7. **Commit to GitHub**: Stage, commit, and push all changes
-8. **Verify**: Preview the development theme and confirm changes
+1. **Verify environment**: Shopify CLI installed and authenticated
+2. **Identify differences**: Compare old and new theme files
+3. **Sync settings**: Copy settings_data.json values from old to new
+4. **Sync sections**: Copy header-group.json and footer-group.json
+5. **Migrate templates**: Copy custom page templates
+6. **Add features**: Add swatches, customize blocks as needed
+7. **Push to Shopify**: `shopify theme push --theme [THEME_ID]`
+8. **Commit to GitHub**: Stage, commit, and push all changes
+9. **Verify**: Preview the development theme and confirm changes
 
 ---
 
@@ -229,4 +391,34 @@ Please:
 9. Commit and push everything to GitHub
 
 After setup, provide a summary of what was synced.
+```
+
+---
+
+## Advanced: Using Shopify Dev MCP in Claude Code
+
+When you need GraphQL, Liquid validation, or documentation:
+
+```
+I need to create a custom Shopify Function for order discounts.
+
+Please:
+1. Use learn_shopify_api with api: "functions" to understand the Functions API
+2. Introspect the GraphQL schema for order discounts
+3. Validate any GraphQL queries I write
+4. Search the docs for best practices
+
+Store: my-store.myshopify.com
+```
+
+For Liquid validation:
+
+```
+I've updated my theme Liquid files. Please validate them:
+
+Files modified:
+- sections/custom-hero.liquid
+- snippets/product-card.liquid
+
+Use the validate_theme MCP tool to check for errors.
 ```
