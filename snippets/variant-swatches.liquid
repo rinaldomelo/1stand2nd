@@ -114,12 +114,11 @@
                     {%- render 'color-name-fallback', color_name: product_option_value.name -%}
                   {%- endif -%}
                 {%- endcapture -%}
-                {%- assign metafield_swatch_image = product_option_value.variant.metafields.custom.swatch_image.value -%}
                 {% render 'swatch',
                   swatch: product_option_value.swatch,
                   variant_image: featured_media,
                   fallback_color_hex: fallback_color_hex,
-                  metafield_swatch_image: metafield_swatch_image,
+                  extract_color_from_image: is_color_option,
                 %}
                 {% render 'strikethrough-variant', product_option: product_option_value %}
               </label>
