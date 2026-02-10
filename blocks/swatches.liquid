@@ -108,6 +108,53 @@
   }
 {% endstylesheet %}
 
+{% javascript %}
+  function extractSwatchColors() {
+    const swatches = document.querySelectorAll('.swatch[data-swatch-image-url]:not([data-swatch-extracted])');
+    if (!swatches.length) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 1;
+    canvas.height = 1;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+    swatches.forEach((swatch) => {
+      const url = swatch.getAttribute('data-swatch-image-url');
+      if (!url) return;
+
+      swatch.setAttribute('data-swatch-extracted', 'pending');
+
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        ctx.clearRect(0, 0, 1, 1);
+        ctx.drawImage(img, 0, 0, 1, 1);
+        const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
+        const hex = '#' + [r, g, b].map((c) => c.toString(16).padStart(2, '0')).join('');
+        swatch.style.setProperty('--swatch-background', hex);
+        swatch.classList.remove('swatch--unavailable');
+        swatch.setAttribute('data-swatch-extracted', hex);
+      };
+      img.src = url;
+    });
+  }
+
+  extractSwatchColors();
+  document.addEventListener('shopify:section:load', extractSwatchColors);
+
+  const swatchObserver = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      for (const node of mutation.addedNodes) {
+        if (node.nodeType === 1 && (node.matches?.('.swatch[data-swatch-image-url]') || node.querySelector?.('.swatch[data-swatch-image-url]'))) {
+          extractSwatchColors();
+          return;
+        }
+      }
+    }
+  });
+  swatchObserver.observe(document.body, { childList: true, subtree: true });
+{% endjavascript %}
+
 {% schema %}
 {
   "name": "t:names.swatches",
