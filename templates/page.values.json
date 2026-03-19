@@ -448,6 +448,7 @@
             "text_JypnRj": {
               "type": "text",
               "name": "t:names.text",
+              "disabled": true,
               "settings": {
                 "text": "<p>The right to self defense is about responsibility preparedness and protecting what matters most. It is about defending your home your family and your way of life when things go bad. We believe in self reliance not helplessness and in having the tools and mindset to protect yourself when real danger appears. Freedom means knowing you can protect your own.</p>",
                 "width": "fit-content",
@@ -500,7 +501,6 @@
             "text_LrVj3r": {
               "type": "text",
               "name": "t:names.text",
-              "disabled": true,
               "settings": {
                 "text": "<p>When things fall apart, words alone will not keep you safe. We believe in the right and responsibility to protect yourself, your family, and what you have built. Not out of obsession, but out of preparedness. Not aggression, but defense. Being ready is not about wanting conflict. It is about refusing to be helpless when it matters most.</p><p></p>",
                 "width": "fit-content",
@@ -527,6 +527,7 @@
             "text_J7AX6T": {
               "type": "text",
               "name": "t:names.text",
+              "disabled": true,
               "settings": {
                 "text": "<p>The right to self defense is about readiness responsibility and refusing to be defenseless. It is about protecting your home your family and your freedom when no one else is coming. We believe in self reliance personal responsibility and the right to meet real threats with real defense. Independence means having both the means and the resolve to protect what is yours.</p>",
                 "width": "fit-content",
